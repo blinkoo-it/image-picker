@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<XFile>? _imageFileList;
 
-  set _imageFile(XFile? value) {
+  void _setImageFileListFromFile(XFile? value) {
     _imageFileList = value == null ? null : <XFile>[value];
   }
 
@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final List<XFile>? pickedFileList = await _picker.pickMultiImage(
+          final List<XFile> pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             imageQuality: quality,
           );
           setState(() {
-            _imageFile = pickedFile;
+            _setImageFileListFromFile(pickedFile);
           });
         } catch (e) {
           setState(() {
@@ -228,8 +228,11 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         isVideo = false;
         setState(() {
-          _imageFile = response.file;
-          _imageFileList = response.files;
+          if (response.files == null) {
+            _setImageFileListFromFile(response.file);
+          } else {
+            _imageFileList = response.files;
+          }
         });
       }
     } else {
